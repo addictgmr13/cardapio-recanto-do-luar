@@ -164,7 +164,7 @@
     padding-top:6px;
   }
   section.cat{
-    scroll-margin-top:118px;
+    scroll-margin-top: calc(var(--header-h, 150px) + 14px);
     margin-top:26px;
   }
   .cat-head{
@@ -218,10 +218,11 @@
   }
   .item-price small{
     display:block;
-    font-size:10.5px;
-    color:var(--muted);
+    font-size:14px;
+    color:var(--moon);
     font-weight:400;
     letter-spacing:0.3px;
+    margin-top:2px;
   }
   .item.highlight{
     background:linear-gradient(90deg, rgba(193,98,45,0.14), transparent);
@@ -232,6 +233,7 @@
     border:1px solid rgba(193,98,45,0.35);
   }
   .item.highlight .item-price{color:var(--ember-bright); font-size:16px;}
+  .item.highlight .item-price small{font-size:16px; color:var(--ember-bright);}
 
   .no-results{
     text-align:center;
@@ -399,14 +401,24 @@ const DATA = [
       {n:"Ovo Frito (unidade)", p:"R$ 3,50"}, {n:"Gelo e Limão", p:"R$ 1,00"}, {n:"Shot de Limão", p:"R$ 3,00"},
       {n:"Molho Rosé / Tártaro", p:"R$ 3,00"}, {n:"Salada (média)", p:"R$ 9,90"}, {n:"Salada (grande)", p:"R$ 13,90"},
     ]},
+
+    { id:"sobremesas", name:"Sobremesas", icon:"leaf", items:[
+      {n:"Palha Italiana", p:"R$ 8,00"},
+    ]},
   ]},
 
   { group: "Bebidas", cats: [
+    { id:"chopp", name:"Chopp", icon:"glass", items:[
+      {n:"Chopp Brahma", p:"300ml R$ 8,00", p2:"400ml R$ 10,00"},
+    ]},
+
     { id:"cervejas", name:"Cervejas", icon:"bottle", items:[
-      {n:"Brahma / Skol (600ml)", p:"R$ 10,90"}, {n:"Amstel (600ml)", p:"R$ 11,90"},
-      {n:"Budweiser / Bohemia (600ml)", p:"R$ 11,90"}, {n:"Original / Spaten (600ml)", p:"R$ 14,90"},
+      {n:"Brahma (600ml)", p:"R$ 10,90"}, {n:"Skol (600ml)", p:"R$ 10,90"}, {n:"Amstel (600ml)", p:"R$ 11,90"},
+      {n:"Budweiser (600ml)", p:"R$ 11,90"}, {n:"Bohemia (600ml)", p:"R$ 11,90"},
+      {n:"Original (600ml)", p:"R$ 14,90"}, {n:"Spaten (600ml)", p:"R$ 14,90"},
       {n:"Stella Artois (600ml)", p:"R$ 15,90"}, {n:"Heineken (600ml)", p:"R$ 16,90"},
-      {n:"Corona (600ml)", p:"R$ 17,90"}, {n:"Budweiser (long neck)", p:"R$ 10,90"},
+      {n:"Corona (600ml)", p:"R$ 17,90"}, {n:"Stella Gold (600ml)", p:"R$ 17,90"},
+      {n:"Budweiser (long neck)", p:"R$ 10,90"},
       {n:"Corona (long neck)", p:"R$ 12,90"}, {n:"Heineken (long neck)", p:"R$ 12,90"},
       {n:"Stella (long neck)", p:"R$ 12,90"}, {n:"Skol Beats (long neck)", p:"R$ 15,90"},
       {n:"Skol Beats (lata)", p:"R$ 12,90"}, {n:"Stella Gold (lata)", p:"R$ 10,00"},
@@ -494,9 +506,25 @@ DATA.forEach(group=>{
 
 // chip navigation + active state
 const chipBtns = [...chips.querySelectorAll('button')];
+function setHeaderOffset(){
+  const h = document.querySelector('header.top').offsetHeight;
+  document.documentElement.style.setProperty('--header-h', h + 'px');
+}
+setHeaderOffset();
+window.addEventListener('resize', setHeaderOffset);
+window.addEventListener('load', setHeaderOffset);
+
+function scrollToSection(id){
+  const el = document.getElementById(id);
+  const header = document.querySelector('header.top');
+  if(!el || !header) return;
+  const headerH = header.getBoundingClientRect().height;
+  const targetY = el.getBoundingClientRect().top + window.pageYOffset - headerH - 14;
+  window.scrollTo({top: Math.max(targetY, 0), behavior:'smooth'});
+}
 chipBtns.forEach(btn=>{
   btn.addEventListener('click', ()=>{
-    document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth'});
+    scrollToSection(btn.dataset.target);
   });
 });
 const sections = [...document.querySelectorAll('section.cat')];
